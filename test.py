@@ -1,5 +1,6 @@
 import hashlib
 import math
+from sys import exit
 
 list_of_characters = ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', 'a', 's', 
 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'z', 'x', 'c', 'v', 'b', 'n', 'm', 'Q', 'W', 
@@ -9,12 +10,29 @@ list_of_characters = ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', 'a', 's'
 '=', '{', '[', '}', ']', '|', '\\', ':', ';', '"', "'", '<', ',', '>', '.', '?',
  '/']
 
-def try_password():
-    pass
+def try_password(hash_, password):
+    pw_hash = string_to_hash_func(password)
+
+    if hash_ == pw_hash:
+
+        print(f"The password is: {password}")
+        exit()
+    else:
+        pass
+
+def string_to_hash_func(string_to_hash):
+    string_encoded = string_to_hash.encode()
+
+    hash_container = hashlib.sha256()
+    hash_container.update(string_encoded)
+    hashed_string = hash_container.hexdigest()
+
+    return hashed_string
+
 
 def combinations_with_replacement(iterable, r):
     # combinations_with_replacement('ABC', 2) --> AA AB AC BB BC CC
-    # the code behind the itertools.combinations
+    # This is basically the code behind the itertools.combinations.
     pool = tuple(iterable)
     n = len(pool)
     if not n and r:
@@ -30,13 +48,8 @@ def combinations_with_replacement(iterable, r):
         indices[i:] = [indices[i] + 1] * (r - i)
         yield tuple(pool[i] for i in indices)
 
-def possibilities(len_list, how_many_positions):
-    x = pow(how_many_positions, len_list)
 
-    return x
-
-
-def replace_quotes(list_of_combinations):
+def try_all_possibilities(hash_, list_of_combinations):
     x = len(list_of_combinations)
 
     z = x - 1
@@ -47,40 +60,21 @@ def replace_quotes(list_of_combinations):
 
         y = list_of_combinations[z]
 
-        print(y)
+        for i in y:
+            try_password(hash_, i)
+            print(i) 
 
         z -= 1
 
 
+hash_ = string_to_hash_func("II")
+
+
 y = list(combinations_with_replacement(list_of_characters, 2))
 
-replace_quotes(y)
+try_all_possibilities(hash_, y)
 
     
-
-def generate_password_length(user_def):
-    x = user_def
-    y = 0
-    password = []
-
-    while y < x:
-        password.append("x")
-        y += 1
-
-    return password
-
-
-
-
-def string_to_hash_func(string_to_hash):
-    string_encoded = string_to_hash.encode()
-
-    hash_container = hashlib.sha256()
-    hash_container.update(string_encoded)
-    hashed_string = hash_container.hexdigest()
-
-    return hashed_string
-
 
 
 
