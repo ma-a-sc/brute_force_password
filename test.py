@@ -18,7 +18,7 @@ def try_password(hash_, password):
         print(f"The password is: {password}")
         exit()
     else:
-        print(f"{password}")
+        pass
 
 def string_to_hash_func(string_to_hash):
     string_encoded = string_to_hash.encode()
@@ -54,38 +54,27 @@ def try_all_possibilities(hash_, list_of_combinations, number_of_characters):
 
     z = x - 1
 
-    print(x)
-
     while z > 0:
 
         y = list_of_combinations[z]
-
+        pw = []
         for i in y:
-            pw = y[0 : number_of_characters]
-            password = []
-            while number_of_characters > 0:
-                count = 0
-                password.append(pw[count])
+            pw.append(i)
 
-                number_of_characters -= 1
-
-        pw_join = ''.join([str(elem) for elem in password])
-
+        pw_join = ''.join(pw)
+        print(pw_join)
         try_password(hash_, pw_join)
+       
 
         z -= 1
 
 
-hash_ = string_to_hash_func("uI-")
+hash_ = string_to_hash_func("m5-4")
 
 number_of_characters = int(input("How many characters does the password have?"))
 
 y = list(combinations_with_replacement(list_of_characters, number_of_characters))
 
+print (y)
+
 try_all_possibilities(hash_, y, number_of_characters)
-
-    
-
-
-
-
