@@ -1,9 +1,8 @@
-import numpy as np
-import multiprocessing as mp
+from numba import jit
+
 import hashlib
 import math
 from sys import exit
-import timeit
 
 list_of_characters = ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', 'a', 's', 
 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'z', 'x', 'c', 'v', 'b', 'n', 'm', 'Q', 'W', 
@@ -22,7 +21,7 @@ def try_password(hash_, password):
         exit()
     else:
         pass
-
+@jit(nopython = True)
 def string_to_hash_func(string_to_hash):
     string_encoded = string_to_hash.encode()
 
@@ -51,12 +50,13 @@ def combinations_with_replacement(iterable, r):
         indices[i:] = [indices[i] + 1] * (r - i)
         yield tuple(pool[i] for i in indices)
 
+
 def try_all_possibilities(hash_, list_of_combinations, number_of_characters):
     x = len(list_of_combinations)
 
-    z = 0
+    z = x - 1
 
-    while z < x:
+    while z > 0:
 
         y = list_of_combinations[z]
         pw = []
@@ -64,33 +64,19 @@ def try_all_possibilities(hash_, list_of_combinations, number_of_characters):
             pw.append(i)
 
         pw_join = ''.join(pw)
-        print('.')
+        print(pw_join)
         try_password(hash_, pw_join)
        
 
-        z += 1
-
-def list_division(array_with_combinations):
-    array = (np.array_split(array_with_combinations, mp.cpu_count()))
-
-    return array
+        z -= 1
 
 
-if __name__ == '__main__':
+hash_ = string_to_hash_func("m5-")
 
-    hash_ = string_to_hash_func("//")
+number_of_characters = int(input("How many characters does the password have?"))
 
-    number_of_characters = int(input("How many characters does the password have?"))
+y = list(combinations_with_replacement(list_of_characters, number_of_characters))
 
-    y = list(combinations_with_replacement(list_of_characters, number_of_characters))
+print (y)
 
-    print(y)
-
-    arrays = list_division(y)
-
-    queue = mp.Queue()
-
-    for i in arrays:
-        process = mp.Process(target=try_all_possibilities, args=(hash_, i, number_of_characters))
-        process.start()
-        
+try_all_possibilities(hash_, y, number_of_characters)

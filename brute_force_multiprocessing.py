@@ -1,6 +1,9 @@
+import numpy as np
+import multiprocessing as mp
 import hashlib
 import math
 from sys import exit
+import timeit
 
 list_of_characters = ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', 'a', 's', 
 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'z', 'x', 'c', 'v', 'b', 'n', 'm', 'Q', 'W', 
@@ -48,13 +51,12 @@ def combinations_with_replacement(iterable, r):
         indices[i:] = [indices[i] + 1] * (r - i)
         yield tuple(pool[i] for i in indices)
 
-
 def try_all_possibilities(hash_, list_of_combinations, number_of_characters):
     x = len(list_of_combinations)
 
-    z = x - 1
+    z = 0
 
-    while z > 0:
+    while z < x:
 
         y = list_of_combinations[z]
         pw = []
@@ -62,19 +64,33 @@ def try_all_possibilities(hash_, list_of_combinations, number_of_characters):
             pw.append(i)
 
         pw_join = ''.join(pw)
-        print(pw_join)
+        print('.')
         try_password(hash_, pw_join)
        
 
-        z -= 1
+        z += 1
+
+def list_division(array_with_combinations):
+    array = (np.array_split(array_with_combinations, mp.cpu_count()))
+
+    return array
 
 
-hash_ = string_to_hash_func("m5-4")
+if __name__ == '__main__':
 
-number_of_characters = int(input("How many characters does the password have?"))
+    hash_ = string_to_hash_func("//")
 
-y = list(combinations_with_replacement(list_of_characters, number_of_characters))
+    number_of_characters = int(input("How many characters does the password have?"))
 
-print (y)
+    y = list(combinations_with_replacement(list_of_characters, number_of_characters))
 
-try_all_possibilities(hash_, y, number_of_characters)
+    print(y)
+
+    arrays = list_division(y)
+
+    queue = mp.Queue()
+
+    for i in arrays:
+        process = mp.Process(target=try_all_possibilities, args=(hash_, i, number_of_characters))
+        process.start()
+        
